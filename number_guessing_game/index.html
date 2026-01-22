@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Number Wizard</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg-gradient: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+            --card-bg: #ffffff;
+        }
+
+        /* Responsive Layout using Flexbox */
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px; /* Padding for mobile edges */
+            box-sizing: border-box;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 400px; /* Limits size on desktop */
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Typography that adjusts */
+        h2 { 
+            font-size: 1.8rem; 
+            color: #1e1b4b;
+            margin-top: 0;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        /* Responsive Input & Button */
+        input {
+            width: 100%; /* Full width on small screens */
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:active { transform: scale(0.98); }
+
+        /* Media Queries for fine-tuning */
+        @media (max-width: 480px) {
+            .game-card {
+                padding: 1.5rem;
+                border-radius: 16px;
+            }
+            h2 { font-size: 1.5rem; }
+            input { font-size: 1.2rem; }
+        }
+
+        .shake { animation: shake 0.4s; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        #message { font-weight: 600; margin: 15px 0; min-height: 24px; }
+        .stats { color: #64748b; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="game-card" id="card">
+        <h2>Number Wizard</h2>
+        <p>Pick a number between 1 and 100</p>
+
+        <div class="input-section">
+            <input type="number" id="userGuess" pattern="\d*">
+            <button onclick="checkGuess()" id="btn">Guess Now</button>
+        </div>
+
+        <div id="message"></div>
+        <div class="stats">
+            Attempts: <span id="tries">5</span> | Wins: <span id="wins">0</span>
+        </div>
+    </div>
+
+    <script>
+        let target = Math.floor(Math.random() * 100) + 1;
+        let lives = 5;
+        let score = 0;
+
+        function checkGuess() {
+            const input = document.getElementById('userGuess');
+            const msg = document.getElementById('message');
+            const card = document.getElementById('card');
+            const val = parseInt(input.value);
+
+            if (!val || val < 1 || val > 100) {
+                msg.innerText = "Enter 1-100!";
+                return;
+            }
+
+            if (val === target) {
+                msg.innerText = "🎉 Success!";
+                msg.style.color = "#059669";
+                score++;
+                document.getElementById('wins').innerText = score;
+                resetLogic();
+            } else {
+                lives--;
+                card.classList.add('shake');
+                setTimeout(() => card.classList.remove('shake'), 400);
+                
+                msg.innerText = val < target ? "Higher! ⬆️" : "Lower! ⬇️";
+                msg.style.color = "#4f46e5";
+            }
+
+            document.getElementById('tries').innerText = lives;
+
+            if (lives <= 0 && val !== target) {
+                msg.innerText = "Game Over! It was " + target;
+                msg.style.color = "#dc2626";
+                resetLogic();
+            }
+            input.value = "";
+        }
+
+        function resetLogic() {
+            target = Math.floor(Math.random() * 100) + 1;
+            lives = 5;
+            setTimeout(() => {
+                document.getElementById('tries').innerText = lives;
+                document.getElementById('message').innerText = "New Round Started!";
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
